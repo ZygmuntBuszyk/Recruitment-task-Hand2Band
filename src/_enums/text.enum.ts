@@ -1,5 +1,6 @@
 export enum Text {
     Headline = 'Unsplash',
-    Paragraph = 'The internet’s source of freely-usable images. Powered by creators everywhere.',
+    ParagraphFirstLine = 'The internet’s source of freely-usable images.',
+    ParagraphSecondLine = 'Powered by creators everywhere.',
     Input = 'Search free high-resolution photos'
 }
