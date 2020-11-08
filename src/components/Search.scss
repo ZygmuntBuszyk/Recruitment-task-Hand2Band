@@ -1,0 +1,36 @@
+.inputContainer {
+    width: 50%;
+    input {
+        &:focus {
+            // outline: 2;
+        }
+    }
+    .MuiAutocomplete-inputFocused {
+    }
+    .MuiOutlinedInput-root {
+    }
+   
+    .MuiInputBase-root {
+        &:focus {
+            border: 5px solid red;
+            outline: 0;
+            background: red;
+            // outline-color: red !important;
+        }
+    }
+
+   
+
+}
+.MuiOutlinedInput-root{
+    &.Mui-Focused {
+      
+        .MuiOutlinedInput-notchedOutline {
+            border-color: red !important;
+            background: red;
+            border-width: 5px !important;
+            // outline-color: red !important;
+    
+        }
+    }
+}

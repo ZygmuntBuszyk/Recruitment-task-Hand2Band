@@ -1,5 +1,6 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
+import { Search } from './components/Search'
 
 function App() {
   return (
@@ -7,6 +8,7 @@ function App() {
       <h1>
         UNSPLASH APP
       </h1>
+      <Search />
     </div>
   );
 }
