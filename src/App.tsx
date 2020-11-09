@@ -4,8 +4,9 @@ import { Search } from './components/Search'
 import { Text } from './_enums/text.enum'
 
 function App() {
+
   return (
-    <div className="App">
+    <div className="App"> 
       <div className="textContainer">
       <h1>
         { Text.Headline }

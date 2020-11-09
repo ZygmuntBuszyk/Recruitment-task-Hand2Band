@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Input  from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
@@ -6,26 +6,55 @@ import { Text } from '../_enums/text.enum'
 import './Search.scss';
 import SearchIcon from '@material-ui/icons/Search';
 import { IResponse } from '../_models/IResponse.interface'
+import Debounce from '../_services/Debounce'
+import ApiService from '../_services/api.service'
 
 const filterOptions = createFilterOptions({
     matchFrom: 'start',
-    stringify: (option: any) => option.title,
+    stringify: (option: any) => option.query,
   });
-
-const filler: any = [
-    {title: 'one'},
-    {title: 'two'}
-]
-
 
 export const Search = () => {
 
-    const [ state, setState ] = useState([
-            {title: 'one'},
-            {title: 'two'}
+    const [ autocomplete, setAutocomplete ] = useState([
+           
         ]);
     const [value, setValue] = useState('');
     const [inputValue, setInputValue] = useState('');
+
+  const debouncedQuery = Debounce(inputValue);
+
+  useEffect(() => {
+      if(debouncedQuery) {
+        if(debouncedQuery.length > 2) {
+            const queryList = ApiService.getAutocomplete(debouncedQuery)
+            .then((response: any) => { 
+                console.log(response.autocomplete)
+                console.log(typeof response['autocomplete'])
+                setAutocomplete(response.autocomplete)
+            })
+        }
+      } else {
+          console.log('nvm')
+      }
+     
+  }, [debouncedQuery])
+
+    // const inputHanler = (newInputValue: string) => {
+    //     setInputValue(newInputValue)
+    //     console.log(inputValue)
+    //     // Najpierw debounce pozniej sprawdzanie lenghtu. 
+    //     // Debounce(newInputValue);
+    //     // debounce(newInputValue);
+    //     // if(newInputValue.length > 2) {
+    //     //     console.log('at least 3, debounce that mofo')
+
+    //     // }
+    // }
+
+    // const [search, setSearch, {signal, debouncing}] = useDebounce('')
+
+
 
     // const handleChange = (prop: keyof State) => (event: React.ChangeEvent<HTMLInputElement>) => {
     //     setValues({ ...values, [prop]: event.target.value });
@@ -46,10 +75,11 @@ export const Search = () => {
             <Autocomplete 
                 fullWidth
                 freeSolo
-                options = { state }
+                options = { autocomplete }
                 getOptionLabel={(option: any) => {
-                    if(option.title) 
-                        return option.title
+                    console.log('OPTIOPNSAD!!!!', option)
+                    if(option.query) 
+                        return option.query
                     return ''
                 } }
                 filterOptions={filterOptions} 
@@ -58,11 +88,7 @@ export const Search = () => {
                     console.log(value)
                   }}
                 value={ value }
-                onInputChange={(event, newInputValue) => {
-                    setInputValue(newInputValue)
-                    console.log(inputValue)
-                  }}
-                
+                onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
                 getOptionSelected={(option, value) => option.title === value.title}
                 renderInput={(params) => 
                 <TextField 
