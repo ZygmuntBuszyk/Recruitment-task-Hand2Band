@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from 'react'
-import Input  from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { Text } from '../_enums/text.enum'
 import './Search.scss';
 import SearchIcon from '@material-ui/icons/Search';
-import { IResponse } from '../_models/IResponse.interface'
 import Debounce from '../_services/Debounce'
 import ApiService from '../_services/api.service'
 
+//filterOptions moze byc niei potrzebne biorac pod uwage Autocomplete unsplash Api
 const filterOptions = createFilterOptions({
     matchFrom: 'start',
     stringify: (option: any) => option.query,
   });
 
 export const Search = () => {
-
-    const [ autocomplete, setAutocomplete ] = useState([
-           
-        ]);
+    const [ autocomplete, setAutocomplete ] = useState([]);
     const [value, setValue] = useState('');
     const [inputValue, setInputValue] = useState('');
 
@@ -27,23 +23,28 @@ export const Search = () => {
   useEffect(() => {
       if(debouncedQuery) {
         if(debouncedQuery.length > 2) {
-            const queryList = ApiService.getAutocomplete(debouncedQuery)
-            .then((response: any) => { 
-                console.log(response.autocomplete)
-                console.log(typeof response['autocomplete'])
-                setAutocomplete(response.autocomplete)
-            })
+            (async () => {
+                const queryList:any = await ApiService.getAutocomplete(debouncedQuery);
+                setAutocomplete(queryList.autocomplete)
+                console.log(queryList)
+            })()
+            // .then((response: any) => {
+            //     console.log(response.autocomplete)
+            //     console.log(typeof response['autocomplete'])
+            //     setAutocomplete(response.autocomplete)
+            // })
         }
       } else {
           console.log('nvm')
+          setAutocomplete([])
       }
-     
+
   }, [debouncedQuery])
 
     // const inputHanler = (newInputValue: string) => {
     //     setInputValue(newInputValue)
     //     console.log(inputValue)
-    //     // Najpierw debounce pozniej sprawdzanie lenghtu. 
+    //     // Najpierw debounce pozniej sprawdzanie lenghtu.
     //     // Debounce(newInputValue);
     //     // debounce(newInputValue);
     //     // if(newInputValue.length > 2) {
@@ -68,33 +69,42 @@ export const Search = () => {
     //   }}
     //   inputValue={inputValue}
     // getOptionLabel={(option) => option.title}
-    
+
+    // getOptionLabel={(option: any) => {
+    //     if(option.query)
+    //         return option.query
+    //     return ''
+    // } }
+
+    // getOptionLabel={(option) => option?.query}
+
+
     // freeSolo
     return (
         <div className="inputContainer">
-            <Autocomplete 
+            <Autocomplete
                 fullWidth
                 freeSolo
                 options = { autocomplete }
                 getOptionLabel={(option: any) => {
-                    console.log('OPTIOPNSAD!!!!', option)
-                    if(option.query) 
+                    if(option.query)
                         return option.query
                     return ''
                 } }
-                filterOptions={filterOptions} 
-                onChange={(event, newValue) => {
+
+                onChange={(event, newValue: any) => {
+                    console.log('TERAZ')
                     setValue(newValue)
-                    console.log(value)
                   }}
                 value={ value }
                 onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
-                getOptionSelected={(option, value) => option.title === value.title}
-                renderInput={(params) => 
-                <TextField 
+                getOptionSelected={(option, value) => option.query === value.query}
+                filterOptions={filterOptions}
+                renderInput={(params) =>
+                <TextField
                     {...params}
                     placeholder= { Text.Input }
-                    variant="outlined" 
+                    variant="outlined"
                     margin="normal"
                     InputProps={{
                         ...params.InputProps,
@@ -106,10 +116,10 @@ export const Search = () => {
                       }}
 
                 />
-               
+
                 }
             />
-            
+
         </div>
     )
 }
@@ -123,13 +133,13 @@ export const Search = () => {
 // renderInput={(params) => <TextField {...params} label="Combo box" variant="outlined" />}
 
 
-// <Autocomplete 
-// options={ filler } 
+// <Autocomplete
+// options={ filler }
 // getOptionLabel={(option) => option.title}
-// filterOptions={filterOptions} 
+// filterOptions={filterOptions}
 // fullWidth
 // renderInput={(params) =>
-//      <Input 
+//      <Input
 //      {...params}
 //     placeholder = { Text.Input }
 //       />
