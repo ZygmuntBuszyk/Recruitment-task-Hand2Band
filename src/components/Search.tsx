@@ -6,6 +6,7 @@ import './Search.scss';
 import SearchIcon from '@material-ui/icons/Search';
 import Debounce from '../_services/Debounce'
 import ApiService from '../_services/api.service'
+import { useHistory } from "react-router-dom";
 
 //filterOptions moze byc niei potrzebne biorac pod uwage Autocomplete unsplash Api
 const filterOptions = createFilterOptions({
@@ -14,9 +15,10 @@ const filterOptions = createFilterOptions({
   });
 
 export const Search = () => {
+    let history = useHistory();
     const [ autocomplete, setAutocomplete ] = useState([]);
-    const [value, setValue] = useState('');
-    const [inputValue, setInputValue] = useState('');
+    const [value, setValue] = useState<any>('');
+    const [inputValue, setInputValue] = useState<any>('');
 
   const debouncedQuery = Debounce(inputValue);
 
@@ -41,6 +43,11 @@ export const Search = () => {
 
   }, [debouncedQuery])
 
+  const Search = (value: any) => {
+    setValue(value);
+    if(value)
+        history.push(`/s/photos/${value}`);
+  }
     // const inputHanler = (newInputValue: string) => {
     //     setInputValue(newInputValue)
     //     console.log(inputValue)
@@ -85,20 +92,22 @@ export const Search = () => {
             <Autocomplete
                 fullWidth
                 freeSolo
+                value={ value }
                 options = { autocomplete }
                 getOptionLabel={(option: any) => {
                     if(option.query)
                         return option.query
                     return ''
                 } }
-
-                onChange={(event, newValue: any) => {
-                    console.log('TERAZ')
-                    setValue(newValue)
-                  }}
-                value={ value }
                 onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
                 getOptionSelected={(option, value) => option.query === value.query}
+                onChange={(event, newValue: any) => {
+                    console.log('TERAZ')
+                    console.log('newValue: ', newValue)
+                    Search(newValue)
+                    // setInputValue(newValue)
+                  }}
+                inputValue={inputValue}
                 filterOptions={filterOptions}
                 renderInput={(params) =>
                 <TextField
